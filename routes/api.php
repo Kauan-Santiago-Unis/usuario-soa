@@ -1,5 +1,4 @@
 <?php
-
 use App\Http\Controllers\EnderecoController;
 use App\Http\Controllers\NivelAcessoController;
 use App\Http\Controllers\UsuarioController;
