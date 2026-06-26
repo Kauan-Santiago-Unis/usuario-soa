@@ -15,16 +15,11 @@ class UsuarioController extends Controller
         abort_unless($request->user() && $request->user()->isFuncionario(), 403, 'Acesso negado.');
     }
 
-    private function ensureOwnerOrFuncionario(Request $request, User $usuario): void
+    private function ensureOwner(Request $request, User $usuario): void
     {
         $auth = $request->user();
 
         abort_unless($auth, 401, 'Não autenticado.');
-
-        if ($auth->isFuncionario()) {
-            return;
-        }
-
         abort_unless((int) $auth->id === (int) $usuario->id, 403, 'Acesso negado.');
     }
 
@@ -68,7 +63,7 @@ class UsuarioController extends Controller
     public function show(Request $request, int $id)
     {
         $usuario = User::with(['nivelAcesso', 'enderecos'])->findOrFail($id);
-        $this->ensureOwnerOrFuncionario($request, $usuario);
+        $this->ensureOwner($request, $usuario);
 
         return response()->json($usuario);
     }
@@ -76,7 +71,7 @@ class UsuarioController extends Controller
     public function update(Request $request, int $id)
     {
         $usuario = User::findOrFail($id);
-        $this->ensureOwnerOrFuncionario($request, $usuario);
+        $this->ensureOwner($request, $usuario);
 
         $data = $request->validate([
             'nome' => ['sometimes', 'required', 'string', 'max:255'],
@@ -101,7 +96,7 @@ class UsuarioController extends Controller
     public function situacao(Request $request, int $id)
     {
         $usuario = User::findOrFail($id);
-        $this->ensureOwnerOrFuncionario($request, $usuario);
+        $this->ensureOwner($request, $usuario);
 
         $motivos = [
             'cadastro_existe' => true,
@@ -119,6 +114,7 @@ class UsuarioController extends Controller
         $this->ensureFuncionario($request);
 
         $usuario = User::findOrFail($id);
+
         $usuario->update([
             'email_verificado' => true,
             'data_verificacao' => now(),

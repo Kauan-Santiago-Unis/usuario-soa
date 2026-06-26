@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Endereco extends Model
 {
+    protected $table = 'enderecos';
 
     protected $fillable = [
         'usuario_id',
@@ -20,6 +21,6 @@ class Endereco extends Model
 
     public function usuario(): BelongsTo
     {
-        return $this->belongsTo(Usuario::class, 'usuario_id');
+        return $this->belongsTo(User::class, 'usuario_id');
     }
 }
